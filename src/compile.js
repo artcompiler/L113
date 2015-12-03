@@ -41,23 +41,19 @@ let translate = (function() {
   let edgesNode;
   function str(node, options, resume) {
     let val = node.elts[0];
-    resume([], {
-      value: val
-    });
+    resume([], val);
   }
   function num(node, options, resume) {
     let val = node.elts[0];
-    resume([], {
-      value: val
-    });
+    resume([], val);
   }
   function ident(node, options, resume) {
     let val = node.elts[0];
-    resume([], [val]);
+    resume([], val);
   }
   function bool(node, options, resume) {
     let val = node.elts[0];
-    resume([], [val]);
+    resume([], val);
   }
   function add(node, options, resume) {
     visit(node.elts[0], options, function (err1, val1) {
@@ -77,12 +73,77 @@ let translate = (function() {
   function style(node, options, resume) {
     visit(node.elts[0], options, function (err1, val1) {
       visit(node.elts[1], options, function (err2, val2) {
-        console.log("style() val1=" + JSON.stringify(val1));
         resume([].concat(err1).concat(err2), {
           value: val1,
           style: val2,
         });
       });
+    });
+  };
+  function type(node, options, resume) {
+    visit(node.elts[0], options, function (err1, val1) {
+      console.log("type() val1=" + JSON.stringify(val1));
+      let val;
+      if (val1 instanceof Array) {
+        val = {};
+        val1.forEach(function (v) {
+          let k = Object.keys(v)[0];
+          val[k] = v[k];
+        });
+      } else {
+        val = val1;
+      }
+      resume([].concat(err1), {
+        type: val,
+      });
+    });
+  };
+  function id(node, options, resume) {
+    visit(node.elts[0], options, function (err1, val1) {
+      resume([].concat(err1), {
+        id: val1,
+      });
+    });
+  };
+  function required(node, options, resume) {
+    visit(node.elts[0], options, function (err1, val1) {
+      resume([].concat(err1), {
+        required: val1,
+      });
+    });
+  };
+  function metadata(node, options, resume) {
+    visit(node.elts[0], options, function (err1, val1) {
+      let val = {};
+      val1.forEach(function (v) {
+        let k = Object.keys(v)[0];
+        val[k] = v[k];
+      });
+      resume([].concat(err1), {
+        metadata: val,
+      });
+    });
+  };
+  function docs(node, options, resume) {
+    visit(node.elts[0], options, function (err1, val1) {
+      let val = {};
+      val1.forEach(function (v) {
+        let k = Object.keys(v)[0];
+        val[k] = v[k];
+      });
+      resume([].concat(err1), {
+        docs: val,
+      });
+    });
+  };
+  function object(node, options, resume) {
+    visit(node.elts[0], options, function (err1, val1) {
+      let val = {};
+      val1.forEach(function (v) {
+        let k = Object.keys(v)[0];
+        val[k] = v[k];
+      });
+      resume([].concat(err1), val);
     });
   };
   function list(node, options, resume) {
@@ -93,7 +154,7 @@ let translate = (function() {
           resume([].concat(err1).concat(err2), [].concat(val1).concat(val2));
         });
       });
-    } else if (node.elts && node.elts.length === 0) {
+    } else if (node.elts && node.elts.length === 1) {
       visit(node.elts[0], options, function (err1, val1) {
         resume([].concat(err1), [].concat(val1));
       });
@@ -104,7 +165,9 @@ let translate = (function() {
   function binding(node, options, resume) {
     visit(node.elts[0], options, function (err1, val1) {
       visit(node.elts[1], options, function (err2, val2) {
-        resume([].concat(err1).concat(err2), {key: val1, val: val2});
+        let val = {}
+        val[val1] = val2;
+        resume([].concat(err1).concat(err2), val);
       });
     });
   };
@@ -160,6 +223,12 @@ let translate = (function() {
     "BINDING": binding,
     "ADD" : add,
     "STYLE" : style,
+    "TYPE" : type,
+    "ID" : id,
+    "REQUIRED" : required,
+    "METADATA" : metadata,
+    "DOCS" : docs,
+    "OBJECT": object,
   }
   return translate;
 })();
@@ -175,7 +244,10 @@ let render = (function() {
   }
   function render(val, resume) {
     // Do some rendering here.
-    resume([], val);
+    resume([], {
+      value: val,
+      objectCode: val
+    });
   }
   return render;
 })();
