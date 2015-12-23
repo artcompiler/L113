@@ -140,8 +140,13 @@ let translate = (function() {
     visit(node.elts[0], options, function (err1, val1) {
       let val = {};
       val1.forEach(function (v) {
-        let k = Object.keys(v)[0];
-        val[k] = v[k];
+        if (typeof v === "object") {
+          let k = Object.keys(v)[0];
+          val[k] = v[k];
+        } else {
+          let k = v;
+          val[k] = k;
+        }
       });
       resume([].concat(err1), val);
     });
@@ -244,10 +249,7 @@ let render = (function() {
   }
   function render(val, resume) {
     // Do some rendering here.
-    resume([], {
-      value: val,
-      objectCode: val
-    });
+    resume([], val);
   }
   return render;
 })();

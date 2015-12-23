@@ -13,7 +13,7 @@ window.exports.viewer = (function () {
       str = "ERROR";
     } else {
       data = {
-        tree: obj.value,
+        tree: obj,
         expanded: ["all"],
         collapsed: [],
       };
