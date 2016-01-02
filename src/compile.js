@@ -170,23 +170,29 @@ let translate = (function() {
   function binding(node, options, resume) {
     visit(node.elts[0], options, function (err1, val1) {
       visit(node.elts[1], options, function (err2, val2) {
-        let val = {}
-        val[val1] = val2;
+        let val = {
+          key: val1,
+          value: val2
+        };
         resume([].concat(err1).concat(err2), val);
       });
     });
   };
   function record(node, options, resume) {
     if (node.elts && node.elts.length > 1) {
-      visit(node.elts[0], options, function (err1, val1) {
-        node.elts.shift();
+      visit(node.elts.pop(), options, function (err1, val1) {
+        console.log("record() val1=" + JSON.stringify(val1, null, 2));
         record(node, options, function (err2, val2) {
-          resume([].concat(err1).concat(err2), [].concat(val1).concat(val2));
+          console.log("record() val2=" + JSON.stringify(val2, null, 2));
+          val2[val1.key] = val1.value;
+          resume([].concat(err1).concat(err2), val2);
         });
       });
     } else if (node.elts && node.elts.length > 0) {
-      visit(node.elts[0], options, function (err1, val1) {
-        resume([].concat(err1), [].concat(val1));
+      visit(node.elts.pop(), options, function (err1, val1) {
+        let val = {};
+        val[val1.key] = val1.value;
+        resume([].concat(err1), val);
       });
     } else {
       resume([], []);
