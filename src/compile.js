@@ -55,6 +55,10 @@ let translate = (function() {
     let val = node.elts[0];
     resume([], val);
   }
+  function nul(node, options, resume) {
+    let val = null;
+    resume([], val);
+  }
   function add(node, options, resume) {
     visit(node.elts[0], options, function (err1, val1) {
       val1 = +val1.value;
@@ -229,6 +233,7 @@ let translate = (function() {
     "NUM": num,
     "IDENT": ident,
     "BOOL": bool,
+    "NULL": nul,
     "LIST": list,
     "RECORD": record,
     "BINDING": binding,
