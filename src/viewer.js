@@ -2,9 +2,7 @@
 /* vim: set shiftwidth=2 tabstop=2 autoindent cindent expandtab: */
 /* Copyright (c) 2015, Jeff Dyer, Art Compiler LLC */
 // This product includes color specifications and designs developed by Cynthia Brewer (http://colorbrewer.org/).
-
-
-window.exports.viewer = (function () {
+window.gcexports.viewer = (function () {
   function update(el, obj, src, pool) {
     obj = JSON.parse(obj);
     let data, str;

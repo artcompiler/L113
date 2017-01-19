@@ -148,18 +148,17 @@ exports.reserveCodeRange = reserveCodeRange;
 },{}],2:[function(require,module,exports){
 "use strict";
 
-function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; }
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 /* -*- Mode: js; js-indent-level: 2; indent-tabs-mode: nil; tab-width: 2 -*- */
 /* vim: set shiftwidth=2 tabstop=2 autoindent cindent expandtab: */
 /* Copyright (c) 2015, Jeff Dyer, Art Compiler LLC */
 // This product includes color specifications and designs developed by Cynthia Brewer (http://colorbrewer.org/).
-
-window.exports.viewer = (function () {
+window.gcexports.viewer = function () {
   function update(el, obj, src, pool) {
     obj = JSON.parse(obj);
-    var data = undefined,
-        str = undefined;
+    var data = void 0,
+        str = void 0;
     var graphs = []; //array of graph objects, rather than a single object full of arrays.
     if (obj.error && obj.error.length > 0) {
       str = "ERROR";
@@ -432,6 +431,6 @@ window.exports.viewer = (function () {
     update: update,
     capture: capture
   };
-})();
+}();
 
 },{}]},{},[1,2]);
