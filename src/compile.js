@@ -152,68 +152,80 @@ let translate = (function() {
       });
       resume([].concat(err1), val);
     });
-  };
+  }
   function list(node, options, resume) {
     if (node.elts && node.elts.length > 1) {
       visit(node.elts[0], options, function (err1, val1) {
-        node.elts.shift();
-        list(node, options, function (err2, val2) {
-          resume([].concat(err1).concat(err2), [].concat(val1).concat(val2));
-        });
-      });
-    } else if (node.elts && node.elts.length === 1) {
-      visit(node.elts[0], options, function (err1, val1) {
-        resume([].concat(err1), [].concat(val1));
-      });
-    } else {
-      resume([], []);
-    }
-  };
-  function binding(node, options, resume) {
-    visit(node.elts[0], options, function (err1, val1) {
-      visit(node.elts[1], options, function (err2, val2) {
-        let val = {
-          key: val1,
-          value: val2
+        node = {
+          tag: "LIST",
+          elts: node.elts.slice(1),
         };
-        resume([].concat(err1).concat(err2), val);
-      });
-    });
-  };
-  function record(node, options, resume) {
-    if (node.elts && node.elts.length > 1) {
-      visit(node.elts.pop(), options, function (err1, val1) {
-        record(node, options, function (err2, val2) {
-          val2[val1.key] = val1.value;
-          resume([].concat(err1).concat(err2), val2);
+        list(node, options, function (err2, val2) {
+          let val = [].concat(val2);
+          val.unshift(val1);
+          resume([].concat(err1).concat(err2), val);
         });
       });
     } else if (node.elts && node.elts.length > 0) {
-      visit(node.elts.pop(), options, function (err1, val1) {
-        let val = {};
-        val[val1.key] = val1.value;
+      visit(node.elts[0], options, function (err1, val1) {
+        let val = [val1];
         resume([].concat(err1), val);
       });
     } else {
       resume([], []);
     }
-  };
-  function exprs(node, options, resume) {
+  }
+  function binding(node, options, resume) {
+    visit(node.elts[0], options, function (err1, val1) {
+      visit(node.elts[1], options, function (err2, val2) {
+        resume([].concat(err1).concat(err2), {key: val1, val: val2});
+      });
+    });
+  }
+  function record(node, options, resume) {
     if (node.elts && node.elts.length > 1) {
       visit(node.elts[0], options, function (err1, val1) {
-        node.elts.shift();
-        exprs(node, options, function (err2, val2) {
-          resume([].concat(err1).concat(err2), [].concat(val1).concat(val2));
+        node = {
+          tag: "RECORD",
+          elts: node.elts.slice(1),
+        };
+        record(node, options, function (err2, val2) {
+          val2[val1.key] = val1.val;
+          resume([].concat(err1).concat(err2), val2);
         });
       });
     } else if (node.elts && node.elts.length > 0) {
       visit(node.elts[0], options, function (err1, val1) {
-        resume([].concat(err1), [].concat(val1));
+        let val = {};
+        val[val1.key] = val1.val;
+        resume([].concat(err1), val);
+      });
+    } else {
+      resume([], {});
+    }
+  }
+  function exprs(node, options, resume) {
+    if (node.elts && node.elts.length > 1) {
+      visit(node.elts[0], options, function (err1, val1) {
+        node = {
+          tag: "EXPRS",
+          elts: node.elts.slice(1),
+        };
+        exprs(node, options, function (err2, val2) {
+          let val = [].concat(val2);
+          val.unshift(val1);
+          resume([].concat(err1).concat(err2), val);
+        });
+      });
+    } else if (node.elts && node.elts.length > 0) {
+      visit(node.elts[0], options, function (err1, val1) {
+        let val = [val1];
+        resume([].concat(err1), val);
       });
     } else {
       resume([], []);
     }
-  };
+  }
   function program(node, options, resume) {
     if (!options) {
       options = {};
@@ -266,12 +278,10 @@ export let compiler = (function () {
     // an object to be rendered on the client by the viewer for this language.
     try {
       translate(pool, function (err, val) {
-        console.log("translate err=" + JSON.stringify(err, null, 2) + "\nval=" + JSON.stringify(val, null, 2));
         if (err.length) {
           resume(err, val);
         } else {
           render(val, function (err, val) {
-            console.log("render err=" + JSON.stringify(err, null, 2) + "\nval=" + JSON.stringify(val, null, 2));
             resume(err, val);
           });
         }
