@@ -157,6 +157,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 window.gcexports.viewer = function () {
   function update(el, obj, src, pool) {
     obj = JSON.parse(obj);
+    obj = [].concat(obj); // We need an array at the root.
     var data = void 0,
         str = void 0;
     var graphs = []; //array of graph objects, rather than a single object full of arrays.

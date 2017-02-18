@@ -231,7 +231,8 @@ let translate = (function() {
       options = {};
     }
     visit(node.elts[0], options, function (err, val) {
-      resume(err, val);
+      // Return the value of the last expression.
+      resume(err, val[val.length-1]);
     });
   }
   let table = {

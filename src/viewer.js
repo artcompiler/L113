@@ -5,6 +5,7 @@
 window.gcexports.viewer = (function () {
   function update(el, obj, src, pool) {
     obj = JSON.parse(obj);
+    obj = [].concat(obj);  // We need an array at the root.
     let data, str;
     var graphs = [];//array of graph objects, rather than a single object full of arrays.
     if (obj.error && obj.error.length > 0) {
