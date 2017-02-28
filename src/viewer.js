@@ -4,7 +4,6 @@
 // This product includes color specifications and designs developed by Cynthia Brewer (http://colorbrewer.org/).
 window.gcexports.viewer = (function () {
   function update(el, obj, src, pool) {
-    obj = JSON.parse(obj);
     obj = [].concat(obj);  // We need an array at the root.
     let data, str;
     var graphs = [];//array of graph objects, rather than a single object full of arrays.
