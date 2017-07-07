@@ -29,13 +29,15 @@ app.get('/version', function(req, res) {
   res.send(version);
 });
 app.get('/compile', function(req, res) {
-  var data = "";
+  var body = "";
   req.on("data", function (chunk) {
-    data += chunk;
+    body += chunk;
   });
   req.on('end', function () {
-    var src = JSON.parse(data).src;
-    var obj = compiler.compile(src, function (err, val) {
+    body = JSON.parse(body);
+    let code = body.src;
+    let data = body.data;
+    var obj = compiler.compile(code, data, function (err, val) {
       if (err.length) {
         res.send({
           error: err,

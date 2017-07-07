@@ -12,9 +12,9 @@ messages[1004] = "No visitor method defined for '%1'.";
 
 let translate = (function() {
   let nodePool;
-  function translate(pool, resume) {
+  function translate(pool, options, resume) {
     nodePool = pool;
-    return visit(pool.root, {}, resume);
+    return visit(pool.root, options, resume);
   }
   function error(str, nid) {
     return {
@@ -226,11 +226,22 @@ let translate = (function() {
       resume([], []);
     }
   }
+  function isObject(val) {
+    return (
+      val !== null &&
+      typeof val === "object" &&
+      !Array.isArray(val)
+    );
+  }
   function program(node, options, resume) {
     if (!options) {
       options = {};
     }
     visit(node.elts[0], options, function (err, val) {
+      if (isObject(val[0]) && isObject(options.data)) {
+        // If we have two objects, then copy val onto the given object.
+        val = [Object.assign(options.data, val[0])];
+      }
       // Return the value of the last expression.
       resume(err, val[val.length-1]);
     });
@@ -274,11 +285,14 @@ let render = (function() {
   return render;
 })();
 export let compiler = (function () {
-  exports.compile = function compile(pool, resume) {
+  exports.compile = function compile(pool, data, resume) {
     // Compiler takes an AST in the form of a node pool and translates it into
     // an object to be rendered on the client by the viewer for this language.
     try {
-      translate(pool, function (err, val) {
+      let options = {
+        data: data
+      };
+      translate(pool, options, function (err, val) {
         if (err.length) {
           resume(err, val);
         } else {
