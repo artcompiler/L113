@@ -43,7 +43,7 @@ let translate = (function() {
     resume([], val);
   }
   function num(node, options, resume) {
-    let val = node.elts[0];
+    let val = +node.elts[0];
     resume([], val);
   }
   function ident(node, options, resume) {
