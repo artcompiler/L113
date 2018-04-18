@@ -148,10 +148,8 @@ exports.reserveCodeRange = reserveCodeRange;
 },{}],2:[function(require,module,exports){
 "use strict";
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-/* -*- Mode: js; js-indent-level: 2; indent-tabs-mode: nil; tab-width: 2 -*- */
-/* vim: set shiftwidth=2 tabstop=2 autoindent cindent expandtab: */
 /* Copyright (c) 2015, Jeff Dyer, Art Compiler LLC */
 // This product includes color specifications and designs developed by Cynthia Brewer (http://colorbrewer.org/).
 window.gcexports.viewer = function () {
