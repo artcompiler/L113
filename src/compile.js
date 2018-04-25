@@ -1,4 +1,4 @@
-/* Copyright (c) 2015, Art Compiler LLC */
+/* Copyright (c) 2018, Art Compiler LLC */
 import {assert, message, messages, reserveCodeRange} from "./assert.js"
 reserveCodeRange(1000, 1999, "compile");
 messages[1001] = "Node ID %1 not found in pool.";
