@@ -4,12 +4,14 @@
 */
 const langID = "113";
 // SHARED START
+const bodyParser = require('body-parser');
 const https = require("https");
 const express = require('express')
 const compiler = require("./lib/compile.js");
 const app = express();
 app.set('port', (process.env.PORT || "5" + langID));
 app.use(express.static(__dirname + '/pub'));
+app.use(bodyParser.json({type: 'application/json', limit: '50mb'}));
 app.get('/', function(req, res) {
   res.send("Hello, L" + langID + "!");
 });
@@ -22,42 +24,32 @@ process.on('uncaughtException', function(err) {
 app.get("/version", function(req, res) {
   res.send(compiler.version || "v0.0.0");
 });
-app.get("/compile", function(req, res) {
-  let body = "";
-  req.on("data", function (chunk) {
-    body += chunk;
-  });
-  req.on('end', function () {
-    body = JSON.parse(body);
-    let auth = body.auth;
-    validate(auth, (err, data) => {
-      if (err) {
-        res.send(err);
+app.post("/compile", function(req, res) {
+  let body = req.body;
+  let auth = body.auth;
+  validate(auth, (err, data) => {
+    if (err) {
+      res.send(err);
+    } else {
+      if (data.access.indexOf("compile") === -1) {
+        // Don't have compile access.
+        res.sendStatus(401).send(err);
       } else {
-        if (data.access.indexOf("compile") === -1) {
-          // Don't have compile access.
-          res.sendStatus(401).send(err);
-        } else {
-          let code = body.src;
-          let data = body.data;
-          let t0 = new Date;
-          let obj = compiler.compile(code, data, function (err, val) {
-            if (err.length) {
-              res.send({
-                error: err,
-              });
-            } else {
-              console.log("GET /compile " + (new Date - t0) + "ms");
+        let code = body.src;
+        let data = body.data;
+        let t0 = new Date;
+        let obj = compiler.compile(code, data, function (err, val) {
+          if (err.length) {
+            res.send({
+              error: err,
+            });
+          } else {
+            console.log("GET /compile " + (new Date - t0) + "ms");
               res.json(val);
-            }
-          });
-        }
+          }
+        });
       }
-    });
-  });
-  req.on('error', function(e) {
-    console.log(e);
-    res.send(e);
+    }
   });
 });
 function postAuth(path, data, resume) {
