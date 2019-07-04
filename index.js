@@ -34,6 +34,7 @@ app.get("/version", function(req, res) {
 app.post("/compile", function(req, res) {
   let body = req.body;
   let auth = body.auth;
+  console.log("POST /compile body=" + JSON.stringify(body));
   validate(auth, (err, data) => {
     if (err) {
       res.send(err);
