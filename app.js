@@ -7,26 +7,20 @@ const langID = '113';
 const fs = require('fs');
 const http = require('http');
 const https = require('https');
+
 const express = require('express')
-const compiler = require('./src/compile.js');
-const app = express();
 const jsonDiff = require('json-diff');
-const bodyParser = require('body-parser');
-app.use(bodyParser.json({ type: 'application/json', limit: '50mb' }));
+const morgan = require('morgan');
+
+const compiler = require('./src/compile.js');
+
+const app = express();
 app.set('port', (process.env.PORT || '5' + langID));
+app.use(morgan('short'));
+app.use(express.json({ type: 'application/json', limit: '50mb' }));
 app.use(express.static('dist'));
 app.get('/', function(req, res) {
   res.send('Hello, L' + langID + '!');
-});
-app.listen(app.get('port'), function() {
-  global.port = +app.get('port');
-  console.log('Node app is running at localhost:' + app.get('port'))
-  if (process.argv.includes('test')) {
-    test();
-  }
-});
-process.on('uncaughtException', function(err) {
-  console.log('Caught exception: ' + err);
 });
 app.get('/version', function(req, res) {
   res.send(compiler.version || 'v0.0.0');
@@ -36,11 +30,12 @@ app.post('/compile', function(req, res) {
   let auth = body.auth;
   validate(auth, (err, data) => {
     if (err) {
-      res.send(err);
+      res.status(401).send(err);
     } else {
       if (data.access.indexOf('compile') === -1) {
         // Don't have compile access.
-        res.sendStatus(401).send(err);
+        console.log(`${data.access} does not contain 'compile'`);
+        res.sendStatus(401);
       } else {
         let code = body.code;
         let data = body.data;
@@ -83,9 +78,11 @@ function postAuth(path, data, resume) {
       } catch (e) {
         console.log('ERROR ' + data);
         console.log(e.stack);
+        resume(data);
       }
-    }).on('error', function () {
-      console.log('error() status=' + res.statusCode + ' data=' + data);
+    }).on('error', function (err) {
+      console.log('error() status=' + res.statusCode + ' data=' + data + ' err=' + err);
+      resume(err);
     });
   });
   req.end(encodedData);
@@ -116,8 +113,12 @@ function validate(token, resume) {
       jwt: token,
       lang: 'L' + langID,
     }, (err, data) => {
+      if (err) {
+        resume(err);
+        return;
+      }
       validated[token] = data;
-      resume(err, data);
+      resume(null, data);
       count(token, 1);
     });
   }
@@ -197,4 +198,17 @@ const test = () => {
     });
   });
 };
+
+if (require.main === module) {
+  process.on('uncaughtException', function(err) {
+    console.log('Caught exception: ' + err);
+  });
+  app.listen(app.get('port'), function() {
+    global.port = +app.get('port');
+    console.log('Node app is running at localhost:' + app.get('port'))
+    if (process.argv.includes('test')) {
+      test();
+    }
+  });
+}
 // SHARED STOP

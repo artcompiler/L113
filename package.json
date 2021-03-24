@@ -24,7 +24,8 @@
     "body-parser": "^1.19.0",
     "domready": "^1.0.8",
     "express": "^4.17.1",
-    "json-diff": "^0.5.4"
+    "json-diff": "^0.5.4",
+    "morgan": "^1.10.0"
   },
   "repository": {
     "type": "git",
