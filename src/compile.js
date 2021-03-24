@@ -1,5 +1,5 @@
 /* Copyright (c) 2018, Art Compiler LLC */
-import {assert, message, messages, reserveCodeRange} from "./assert.js"
+const {assert, message, messages, reserveCodeRange} = require("./assert.js");
 reserveCodeRange(1000, 1999, "compile");
 messages[1001] = "Node ID %1 not found in pool.";
 messages[1002] = "Invalid tag in node with Node ID %1.";
@@ -280,7 +280,7 @@ let render = (function() {
   }
   return render;
 })();
-export let compiler = (function () {
+module.exports.compiler = (function () {
   exports.compile = function compile(pool, data, resume) {
     // Compiler takes an AST in the form of a node pool and translates it into
     // an object to be rendered on the client by the viewer for this language.

@@ -5,7 +5,9 @@
   "author": "Art Compiler LLC",
   "main": "index.js",
   "scripts": {
-    "start": "node --harmony index.js"
+    "build": "webpack --config configs/webpack.config.js --mode=production",
+    "start": "node --harmony index.js",
+    "test": "node index.js test"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
@@ -23,8 +25,8 @@
     ]
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-preset-es2015": "^6.1.2",
-    "browserify": "^17.0.0"
+    "copy-webpack-plugin": "^8.1.0",
+    "webpack": "^5.27.2",
+    "webpack-cli": "^4.5.0"
   }
 }
