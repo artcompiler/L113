@@ -8,11 +8,11 @@ lib: $(LIB)
 pub: $(PUB)
 lib/%.js: src/%.js
 	mkdir -p $(@D)
-	babel --modules common $< -o $@
+	npx babel --modules common $< -o $@
 
 pub/%.js: lib/%.js
 	mkdir -p $(@D)
-	browserify lib/assert.js lib/viewer.js > pub/viewer.js
+	npx browserify lib/assert.js lib/viewer.js > pub/viewer.js
 
 run:
 	npm start
