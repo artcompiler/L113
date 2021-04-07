@@ -137,7 +137,7 @@ let checkCounter = function () {
   assert(count--, countMessage);
 }
 
-export {
+module.exports = {
   assert,
   message,
   messages,

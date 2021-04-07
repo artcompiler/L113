@@ -1,32 +1,39 @@
 {
-  "name": "L113",
-  "version": "0.0.0",
+  "name": "@graffiticode/l113",
+  "version": "0.0.1",
   "description": "Compiler as a service.",
   "author": "Art Compiler LLC",
-  "main": "index.js",
+  "license": "MIT",
+  "main": "app.js",
   "scripts": {
-    "start": "node --harmony index.js"
+    "build": "webpack --config configs/webpack.config.js --mode=production",
+    "start": "node --harmony app.js",
+    "test": "node app.js test"
   },
   "dependencies": {
+    "@google-cloud/opentelemetry-cloud-trace-exporter": "^0.9.0",
+    "@opentelemetry/api": "^1.0.0-rc.0",
+    "@opentelemetry/core": "^0.18.0",
+    "@opentelemetry/metrics": "^0.18.0",
+    "@opentelemetry/node": "^0.18.0",
+    "@opentelemetry/plugin-dns": "^0.14.0",
+    "@opentelemetry/plugin-express": "^0.14.0",
+    "@opentelemetry/plugin-http": "^0.18.0",
+    "@opentelemetry/plugin-https": "^0.18.0",
+    "@opentelemetry/tracing": "^0.18.0",
     "body-parser": "^1.19.0",
     "domready": "^1.0.8",
     "express": "^4.17.1",
-    "json-diff": "^0.5.4"
-  },
-  "engines": {
-    "node": "latest"
+    "json-diff": "^0.5.4",
+    "morgan": "^1.10.0"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/artcompiler/L113"
   },
-  "babel": {
-    "presets": [
-      "es2015"
-    ]
-  },
   "devDependencies": {
-    "babel": "^6.0.x",
-    "babel-preset-es2015": "^6.1.2"
+    "copy-webpack-plugin": "^8.1.0",
+    "webpack": "^5.27.2",
+    "webpack-cli": "^4.5.0"
   }
 }

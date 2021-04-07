@@ -1,0 +1,15 @@
+steps:
+ # Deploy container image to Cloud Run
+ - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+   entrypoint: gcloud
+   args:
+    - 'run'
+    - 'deploy'
+    - 'l113'
+    - '--image'
+    - 'gcr.io/$PROJECT_ID/graffiticode/l113:$COMMIT_SHA'
+    - '--region'
+    - 'us-central1'
+    - '--platform'
+    - 'managed'
+    - '--allow-unauthenticated'
